@@ -1,1 +1,10 @@
-{}
+{
+  "auth": {
+    "macamplifyappbad2d537": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}
