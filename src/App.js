@@ -1,5 +1,4 @@
 import './App.css';
-
 import { API } from 'aws-amplify'
 import { useEffect, useState } from 'react';
 
