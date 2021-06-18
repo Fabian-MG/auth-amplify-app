@@ -1,19 +1,22 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-macamplifyapp-dev-215030-authRole",
-      "UnauthRoleArn": "arn:aws:iam::711356895462:role/amplify-macamplifyapp-dev-215030-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::711356895462:role/amplify-macamplifyapp-dev-215030-authRole",
+      "AuthRoleName": "amplify-cryptoapp-dev-162953-authRole",
+      "UnauthRoleArn": "arn:aws:iam::711356895462:role/amplify-cryptoapp-dev-162953-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::711356895462:role/amplify-cryptoapp-dev-162953-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-macamplifyapp-dev-215030-deployment",
-      "UnauthRoleName": "amplify-macamplifyapp-dev-215030-unauthRole",
-      "StackName": "amplify-macamplifyapp-dev-215030",
-      "StackId": "arn:aws:cloudformation:us-east-1:711356895462:stack/amplify-macamplifyapp-dev-215030/c9d08c10-cf16-11eb-8cee-0ea47a628cf7",
-      "AmplifyAppId": "d2x6b9ent7oe86"
+      "DeploymentBucketName": "amplify-cryptoapp-dev-162953-deployment",
+      "UnauthRoleName": "amplify-cryptoapp-dev-162953-unauthRole",
+      "StackName": "amplify-cryptoapp-dev-162953",
+      "StackId": "arn:aws:cloudformation:us-east-1:711356895462:stack/amplify-cryptoapp-dev-162953/296850d0-cfb3-11eb-bc5f-1271b8f35690",
+      "AmplifyAppId": "d3t333xpf7iejs"
     },
     "categories": {
-      "auth": {
-        "macamplifyappbad2d537": {}
+      "function": {
+        "cryptofunction": {
+          "deploymentBucketName": "amplify-cryptoapp-dev-162953-deployment",
+          "s3Key": "amplify-builds/cryptofunction-4d51667543394e564f35-build.zip"
+        }
       }
     }
   }

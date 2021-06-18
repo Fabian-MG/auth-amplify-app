@@ -1,10 +1,25 @@
 {
-  "auth": {
-    "macamplifyappbad2d537": {
-      "service": "Cognito",
+  "function": {
+    "cryptofunction": {
+      "build": true,
       "providerPlugin": "awscloudformation",
-      "dependsOn": [],
-      "customAuth": false
+      "service": "Lambda"
+    }
+  },
+  "api": {
+    "cryptoapi": {
+      "service": "API Gateway",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "cryptofunction",
+          "attributes": [
+            "Name",
+            "Arn"
+          ]
+        }
+      ]
     }
   }
 }
