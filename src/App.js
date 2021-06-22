@@ -1,11 +1,10 @@
 import './App.css';
-import { NoteList } from './components';
+import { NoteList, Navbar } from './components';
 
 function App() {
- 
   return (
-    <div className="App">
-      <h1>Hello from AWS Amplify 🚀</h1>
+    <div className="w-screen flex flex-col items-center justify-center align">
+      <Navbar />
       <NoteList />
     </div>
   );

@@ -20,6 +20,7 @@ const initialState = {
     notes: [],
     loading: true,
     error: false,
+    status: STATUS.PENDING,
     form: { name: '', description: '' }
 }
 
@@ -36,7 +37,7 @@ function reducer(state, action) {
       case ACTION.SET_INPUT:
         return { ...state, form: { ...state.form, [action.name]: action.value } }
       case ACTION.ERROR:
-        return { ...state, loading: false, error: true }
+        return { ...state, status: STATUS.REJECTED}
       default:
         return state
     } 
@@ -44,10 +45,11 @@ function reducer(state, action) {
 
 export const NoteList = () => {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { notes, status, form, error } = state
+    const { notes, status, form } = state
 
     async function fetchNotes() {
         try {
+            dispatch({type: ACTION.FETCH})
             const notesData = await API.graphql({query: LIST_NOTES})
             dispatch({type: ACTION.SET_NOTES, notes: notesData.data.listNotes.items})
         } catch(error) {
@@ -109,10 +111,6 @@ export const NoteList = () => {
           }
     }
 
-    function onChange(e) {
-        dispatch({ type: ACTION.SET_INPUT, name: e.target.name, value: e.target.value })
-    }
-
     useEffect(() => {
         fetchNotes()
         const subscription = API.graphql({
@@ -122,46 +120,60 @@ export const NoteList = () => {
               next: noteData => {
                 const note = noteData.value.data.onCreateNote
                 if (CLIENT_ID === note.clientId) return
-                console.log('New Note', noteData)
                 dispatch({ type: 'ADD_NOTE', note })
                } 
             })
         return () => subscription.unsubscribe()
     }, [])
 
-    if(status === STATUS.PENDING) {
-        return <Spinner />
-    } else if (error) {
-        return <h1>Error</h1>
+    function onChange(e) {
+        dispatch({ type: ACTION.SET_INPUT, name: e.target.name, value: e.target.value })
     }
 
-    return (
-        <>
-             <input
-                onChange={onChange}
-                value={state.form.name}
-                placeholder="Note Name"
-                name='name'
-            /> <input
-                onChange={onChange}
-                value={state.form.description}
-                placeholder="Note description"
-                name='description'
-            /> <button
-                onClick={createNote}
-                type="primary"
-                >Create Note</button>
-
-            {
-               notes.map((note) => 
-                 <Note 
-                    key={note.id} 
-                    note={note} 
-                    deleteNote={deleteNote} 
-                    updateNote={updateNote}
-                 /> 
-               )
-            }
-        </>
+    if(status === STATUS.PENDING) {
+        return <Spinner />
+    } else if (status === STATUS.REJECTED) {
+        return <h1>Error</h1>
+    } else if (status === STATUS.FULFILLED) {   
+     return (
+        <div className="w-full flex p-16 justify-between"> 
+            <div className="w-7/12">
+                {
+                notes.length ? notes.map((note) => 
+                    <Note 
+                        key={note.id} 
+                        note={note} 
+                        deleteNote={deleteNote} 
+                        updateNote={updateNote}
+                    /> 
+                ) : <h1 className="text-indigo-700 text-3xl">Start adding some notes...</h1>
+                }
+            </div>
+            <div className="flex items-center flex-col w-4/12 h-60 p-6 shadow-md rounded-md">
+                <h2 className="mb-3 text-indigo-700 text-xl font-medium">Create a Note</h2>
+                <input
+                    onChange={onChange}
+                    value={state.form.name}
+                    placeholder="Note Name"
+                    name='name'
+                    className="w-full p-1 text-sm my-2 border ring-0 border-gray-300 rounded-md"
+                /> 
+                <input
+                    onChange={onChange}
+                    value={state.form.description}
+                    placeholder="Note description"
+                    name='description'
+                    className="w-full p-1 text-sm my-2 border ring-0 border-gray-300 rounded-md"
+                /> 
+                <button
+                    onClick={createNote}
+                    type="primary"
+                    className="mt-3 border w-full h-8 rounded-md bg-indigo-700 text-indigo-100"
+                >
+                    Add
+                </button>
+            </div>
+        </div>
     )
+        }
 }
