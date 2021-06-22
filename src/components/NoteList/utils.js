@@ -1,0 +1,8 @@
+export const ACTION = {
+    RESET_FORM: 'RESET_FORM',
+    SET_NOTES: 'SET_NOTES',
+    ADD_NOTES: 'ADD_NOTES',
+    SET_INPUT: 'SET_INPUT',
+    FETCH: 'FETCH',
+    ERROR: 'ERROR'
+}

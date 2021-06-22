@@ -5,19 +5,14 @@ import { Note } from './Note/Note'
 import { Spinner } from '../Spinner/Spinner'
 
 import { STATUS } from '../../utils'
+import { ACTION  } from './utils'
 import { listNotes as LIST_NOTES} from "../../graphql/queries"
-import { createNote as CREATE_NOTE } from "../../graphql/mutations"
+import { 
+    createNote as CREATE_NOTE,
+    deleteNote as DELETE_NOTE 
+} from "../../graphql/mutations"
 
 const CLIENT_ID = uuid()
-
-const ACTION = {
-    RESET_FORM: 'RESET_FORM',
-    SET_NOTES: 'SET_NOTES',
-    ADD_NOTES: 'ADD_NOTES',
-    SET_INPUT: 'SET_INPUT',
-    FETCH: 'FETCH',
-    ERROR: 'ERROR'
-}
 
 const initialState = {
     notes: [],
@@ -65,7 +60,7 @@ export const NoteList = () => {
         }
         const note = {...form, clientId: CLIENT_ID, completed: false, id: uuid()}
         dispatch({type: ACTION.ADD_NOTES, note})
-        dispatch({ type: 'RESET_FORM' })
+        dispatch({ type: ACTION.RESET_FORM })
 
         try {
             await API.graphql({
@@ -78,8 +73,26 @@ export const NoteList = () => {
         }
     }
 
+    async function deleteNote({id}) {
+        const index = state.notes.findIndex(n => n.id === id)
+        const notes = [
+            ...state.notes.slice(0,index),
+            ...state.notes.slice(index + 1)
+        ]
+        dispatch({ type: ACTION.SET_NOTES, notes })
+        try {
+            await API.graphql({
+              query: DELETE_NOTE,
+              variables: { input: { id } }
+            })
+            console.log('successfully deleted note!')
+        } catch (err) {
+            console.log({ err })
+        }
+    }
+
     function onChange(e) {
-        dispatch({ type: 'SET_INPUT', name: e.target.name, value: e.target.value })
+        dispatch({ type: ACTION.SET_INPUT, name: e.target.name, value: e.target.value })
     }
 
     useEffect(() => {
@@ -88,8 +101,7 @@ export const NoteList = () => {
 
     if(status === STATUS.PENDING) {
         return <Spinner />
-    } else if (status === STATUS.ERROR) {
-        console.log(status)
+    } else if (error) {
         return <h1>Error</h1>
     }
 
@@ -110,7 +122,7 @@ export const NoteList = () => {
                 type="primary"
                 >Create Note</button>
 
-            {notes.map((note) => <Note key={note.id} note={note} /> )}
+            {notes.map((note) => <Note key={note.id} note={note} deleteNote={deleteNote}/> )}
         </>
     )
 }
