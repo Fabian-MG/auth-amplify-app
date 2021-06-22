@@ -7,6 +7,7 @@ import { Spinner } from '../Spinner/Spinner'
 import { STATUS } from '../../utils'
 import { ACTION  } from './utils'
 import { listNotes as LIST_NOTES} from "../../graphql/queries"
+import { onCreateNote } from "../../graphql/subscriptions"
 import { 
     createNote as CREATE_NOTE,
     deleteNote as DELETE_NOTE,
@@ -114,6 +115,18 @@ export const NoteList = () => {
 
     useEffect(() => {
         fetchNotes()
+        const subscription = API.graphql({
+            query: onCreateNote
+          })
+            .subscribe({
+              next: noteData => {
+                const note = noteData.value.data.onCreateNote
+                if (CLIENT_ID === note.clientId) return
+                console.log('New Note', noteData)
+                dispatch({ type: 'ADD_NOTE', note })
+               } 
+            })
+        return () => subscription.unsubscribe()
     }, [])
 
     if(status === STATUS.PENDING) {
