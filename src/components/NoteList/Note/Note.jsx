@@ -1,4 +1,5 @@
-export const Note = ({note, deleteNote}) => {
+
+export const Note = ({note, deleteNote, updateNote}) => {
     return (
         <div>
             <div>
@@ -6,7 +7,12 @@ export const Note = ({note, deleteNote}) => {
                 <p>{note.description}</p>
             </div>
             <div>
-                <p onClick={() => deleteNote(note)}>Delete</p>
+                <p onClick={() => deleteNote(note)}>
+                    Delete
+                </p>
+                <p onClick={() => updateNote(note)}>
+                    {note.completed ? 'Complete' : 'mark completed'}
+                </p>
             </div>
         </div>
     )

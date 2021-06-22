@@ -13,6 +13,7 @@ export const Coins = () => {
   
     useEffect(() => {
       fetchCoins()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   
     function updateInputValues(type, value) {

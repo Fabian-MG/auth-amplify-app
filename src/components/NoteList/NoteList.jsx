@@ -9,7 +9,8 @@ import { ACTION  } from './utils'
 import { listNotes as LIST_NOTES} from "../../graphql/queries"
 import { 
     createNote as CREATE_NOTE,
-    deleteNote as DELETE_NOTE 
+    deleteNote as DELETE_NOTE,
+    updateNote as UPDATE_NOTE
 } from "../../graphql/mutations"
 
 const CLIENT_ID = uuid()
@@ -91,6 +92,22 @@ export const NoteList = () => {
         }
     }
 
+    async function updateNote(note) {
+        const index = state.notes.findIndex(n => n.id === note.id)
+        const notes = [...state.notes]
+        notes[index].completed = !note.completed
+        dispatch({ type: 'SET_NOTES', notes})
+        try {
+            await API.graphql({
+              query: UPDATE_NOTE,
+              variables: { input: { id: note.id, completed: notes[index].completed } }
+            })
+            console.log('note successfully updated!')
+          } catch (err) {
+            console.log('error: ', err)
+          }
+    }
+
     function onChange(e) {
         dispatch({ type: ACTION.SET_INPUT, name: e.target.name, value: e.target.value })
     }
@@ -122,7 +139,16 @@ export const NoteList = () => {
                 type="primary"
                 >Create Note</button>
 
-            {notes.map((note) => <Note key={note.id} note={note} deleteNote={deleteNote}/> )}
+            {
+               notes.map((note) => 
+                 <Note 
+                    key={note.id} 
+                    note={note} 
+                    deleteNote={deleteNote} 
+                    updateNote={updateNote}
+                 /> 
+               )
+            }
         </>
     )
 }
