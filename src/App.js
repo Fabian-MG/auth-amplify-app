@@ -1,9 +1,9 @@
-import './App.css';
-import { Route, Switch, useLocation } from 'react-router-dom'
-import { NoteList, Navbar } from './components';
-import PrivateDashboard from './components/PrivateDashboard/PrivateDashboard';
-import PublicDashboard from './components/PublicDashboard/PublicDashboard';
 import { useCallback, useEffect, useState } from 'react';
+
+import { Route, Switch, useLocation } from 'react-router-dom'
+import { NoteList, Navbar, Profile, PrivateDashboard } from './components';
+
+import './App.css';
 
 function App() {
   const location = useLocation()
@@ -26,13 +26,13 @@ function App() {
             <NoteList />
         </Route>
         <Route path="/profile">
-            <PublicDashboard />
+            <Profile />
         </Route>
         <Route path="/dashboard">
             <PrivateDashboard />
         </Route>
         <Route path="/">
-          Hi
+          Home
         </Route> 
       </Switch>
     </div>

@@ -1,9 +1,10 @@
 const PublicDashboard = () => {
+
     return ( 
         <div>
-            <h1>Public route</h1>
+            Public Dashboard  
         </div>
      );
 }
  
-export default PublicDashboard;
+export default (PublicDashboard);
