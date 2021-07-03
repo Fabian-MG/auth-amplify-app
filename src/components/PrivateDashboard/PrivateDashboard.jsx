@@ -1,14 +1,17 @@
 import { Auth } from "aws-amplify";
 import { useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const PrivateDashboard = () => {
     const history = useHistory()
-    const location = useLocation()
     
     useEffect(() => {
-
-    })
+        Auth.currentAuthenticatedUser()
+            .catch(() => {
+                history.push('/profile')
+            })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return ( 
         <div>
