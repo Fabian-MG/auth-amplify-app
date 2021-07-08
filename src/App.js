@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { Route, Switch, useLocation } from 'react-router-dom'
-import { NoteList, Navbar, Profile, PrivateDashboard } from './components';
+import { NoteList, Navbar, Profile, Dashboard } from './components';
 
 import './App.css';
+import { PrivateRoute } from './components/PrivateRoute/PrivateRoute';
 
 function App() {
   const location = useLocation()
@@ -28,10 +29,10 @@ function App() {
         <Route path="/profile">
             <Profile />
         </Route>
-        <Route path="/dashboard">
-            <PrivateDashboard />
-        </Route>
-        <Route path="/">
+        <PrivateRoute path="/dashboard">
+          <Dashboard />
+        </PrivateRoute>
+        <Route path="/">d
           Home
         </Route> 
       </Switch>
