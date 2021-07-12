@@ -13,22 +13,57 @@ const AuthProvider = (props) => {
        try { 
            const userCredentials = await Auth.currentAuthenticatedUser()
            setUser({username: userCredentials.username, ...userCredentials})
-       } catch(err) {
-       }
+       } catch(err) {}
     }
 
-    const logIn = () => {}
+    const signIn = async ({username, password}) => {
+        try {
+            const signInUser = await Auth.signIn(username, password)
+            setUser({ username: signInUser.username, ...signInUser.attributes })
+        } catch(err) {
+            console.log('error signing in..', err)
+        }
+    }
 
-    const logOut= () => {}
+    const signUp = async ({username, password, email}) => {
+        try {
+            await Auth.signUp({username, password, attributes: { email }})
+            console.log('sign up success')
+        } catch(err) {
+            console.log('error signing up..', err)
+        }
+    }
 
-    const register = () => {}
+    async function confirmSignUp({ username, confirmationCode }) {
+        try {
+          await Auth.confirmSignUp(username, confirmationCode)
+        } catch (err) {
+          console.log('error signing up..', err)
+        }
+    }
+    
+    async function forgotPassword({ username }) {
+        try {
+          await Auth.forgotPassword(username)
+        } catch (err) {
+          console.log('error submitting username to reset password...', err)
+        }
+    }
 
+    async function forgotPasswordSubmit({ username, confirmationCode, password }) { 
+        try {
+            await Auth.forgotPasswordSubmit(username, confirmationCode, password)
+        } catch (err) {
+            console.log('error updating password... :', err)
+        }
+    }
+    
     useEffect(() => {
         checkUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const value = { user, logIn, logOut, register }
+    const value = { user, signIn, signUp, confirmSignUp, forgotPassword, forgotPasswordSubmit }
     return (
         <AuthContext.Provider value={value} {...props}/>
     )
