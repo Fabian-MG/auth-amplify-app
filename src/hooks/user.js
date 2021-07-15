@@ -1,60 +1,99 @@
 import { Auth } from "aws-amplify"
+import { useReducer } from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 
 const AuthContext = createContext()
 const initialState = {
-    username: null,
+    user: null,
+    unauthUser: null,
+    error: null,
+    loading: false,
+}
+
+const userReducer = (state, action) => {
+    switch(action.type) {
+        case 'START':
+            return {...state, error: null, loading: true}
+        case 'SIGNIN':
+            return {...state, user: action.payload, error: null, loading: false}
+        case 'SIGNUP':
+            return {...state, unauthUser: action.payload, error: null, loading: false}
+        case 'ERROR': 
+            return {...state, error: action.payload, loading: false}
+        case 'CLEAR':
+            return initialState
+    }
 }
 
 const AuthProvider = (props) => {
-    const [user, setUser] = useState(initialState)
+    const [state, dispatch] = useReducer(userReducer,initialState)
+    const { user, error, loading } = state
 
     const checkUser = async () => {
        try { 
-           const userCredentials = await Auth.currentAuthenticatedUser()
-           setUser({username: userCredentials.username, ...userCredentials})
+        const userCredentials = await Auth.currentAuthenticatedUser()
+        const checkedUser = { username: userCredentials.username, ...userCredentials.attributes }
+        dispatch({type: 'SIGNIN', payload: checkedUser})
        } catch(err) {}
     }
 
     const signIn = async ({username, password}) => {
-        try {
+        try { 
+            dispatch({type: 'START'})
             const signInUser = await Auth.signIn(username, password)
-            setUser({ username: signInUser.username, ...signInUser.attributes })
+            dispatch({type: 'SIGNIN', payload: { username: signInUser.username, ...signInUser.attributes }})
         } catch(err) {
-            console.log('error signing in..', err)
+            dispatch({type: 'ERROR', payload: err})
         }
     }
 
     const signUp = async ({username, password, email}) => {
         try {
+            dispatch({type: 'START'})
             await Auth.signUp({username, password, attributes: { email }})
-            console.log('sign up success')
+            dispatch({type: 'SIGNUP', payload: { username, password, email }})
         } catch(err) {
-            console.log('error signing up..', err)
+            dispatch({type: 'ERROR', payload: err})
         }
     }
 
-    async function confirmSignUp({ username, confirmationCode }) {
+    const confirmSignUp = async ({ username, confirmationCode }) => {
         try {
+          dispatch({type: 'START'})
           await Auth.confirmSignUp(username, confirmationCode)
+          dispatch({type: 'CLEAR'})
         } catch (err) {
-          console.log('error signing up..', err)
+          dispatch({type: 'ERROR', payload: err})
         }
     }
     
-    async function forgotPassword({ username }) {
+    const forgotPassword = async ({ username }) => {
         try {
           await Auth.forgotPassword(username)
         } catch (err) {
-          console.log('error submitting username to reset password...', err)
+            dispatch({type: 'ERROR', payload: err})
         }
     }
 
-    async function forgotPasswordSubmit({ username, confirmationCode, password }) { 
+    const clearError = () => {
+        dispatch({type: 'CLEAR'})
+    }
+
+    const forgotPasswordSubmit = async ({ username, confirmationCode, password }) => { 
         try {
             await Auth.forgotPasswordSubmit(username, confirmationCode, password)
         } catch (err) {
-            console.log('error updating password... :', err)
+            dispatch({type: 'ERROR', payload: err})
+        }
+    }
+
+    const signOut = async () => { 
+        try {
+            await Auth.signOut()
+            dispatch({type: 'CLEAR'})
+        } catch (err) {
+            dispatch({type: 'ERROR', payload: err})
+            console.log(err)
         }
     }
     
@@ -63,7 +102,19 @@ const AuthProvider = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const value = { user, signIn, signUp, confirmSignUp, forgotPassword, forgotPasswordSubmit }
+    const value = { 
+        user, 
+        error, 
+        clearError, 
+        loading, 
+        signIn, 
+        signUp, 
+        signOut, 
+        confirmSignUp, 
+        forgotPassword, 
+        forgotPasswordSubmit 
+    }
+
     return (
         <AuthContext.Provider value={value} {...props}/>
     )
